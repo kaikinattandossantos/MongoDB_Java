@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Teste da API de Produtos</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        form { margin-bottom: 20px; }
+        input { display: block; margin-bottom: 10px; padding: 5px; }
+        pre { background-color: #f0f0f0; padding: 15px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <h1>API de Produtos</h1>
+
+    <hr>
+
+    <h2>Criar um Novo Produto (POST)</h2>
+    <form id="form-criar">
+        <input type="text" id="nome" placeholder="Nome do Produto" required>
+        <input type="text" id="marca" placeholder="Marca" required>
+        <input type="number" id="valor" step="0.01" placeholder="Valor" required>
+        <input type="text" id="tipo" placeholder="Tipo" required>
+        <button type="submit">Criar Produto</button>
+    </form>
+
+    <hr>
+
+    <h2>Listar Todos os Produtos (GET)</h2>
+    <button onclick="listarProdutos()">Listar Produtos Agora</button>
+    
+    <h3>Resultado:</h3>
+    <pre id="resultado">Aguardando ação...</pre>
+
+    <script>
+        // Função para CRIAR um produto
+        document.getElementById('form-criar').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Impede o recarregamento da página
+
+            const produto = {
+                nome: document.getElementById('nome').value,
+                marca: document.getElementById('marca').value,
+                valor: parseFloat(document.getElementById('valor').value),
+                tipo: document.getElementById('tipo').value
+            };
+
+            const resultadoEl = document.getElementById('resultado');
+            resultadoEl.textContent = 'Enviando...';
+
+            try {
+                const response = await fetch('/api/produtos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(produto)
+                });
+                const data = await response.json();
+                resultadoEl.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                resultadoEl.textContent = 'Erro ao criar produto: ' + error;
+            }
+        });
+
+        // Função para LISTAR os produtos
+        async function listarProdutos() {
+            const resultadoEl = document.getElementById('resultado');
+            resultadoEl.textContent = 'Buscando...';
+
+            try {
+                const response = await fetch('/api/produtos');
+                const data = await response.json();
+                resultadoEl.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                resultadoEl.textContent = 'Erro ao listar produtos: ' + error;
+            }
+        }
+    </script>
+
+</body>
+</html>
